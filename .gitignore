@@ -64,6 +64,4 @@ typings/
 
 .idea/
 .prettierrc
-index.js
-package.json
 yarn.lock
