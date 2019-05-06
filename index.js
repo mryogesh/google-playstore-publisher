@@ -2,6 +2,8 @@ const path = require('path');
 const { google } = require('googleapis');
 const axios = require('axios');
 const fs = require('fs');
+const util = require('util');
+const readFilePromise = util.promisify(fs.readFile);
 
 const getAuth = ({ keyFilePath }) =>
   google.auth.getClient({
@@ -25,7 +27,7 @@ exports.publish = async ({ keyFilePath, packageName, track, apkFilePath }) => {
     const { id: editId } = editRes;
 
     // upload apk
-    const apk = fs.readFileSync(apkFilePath);
+    const apk = await readFilePromise(apkFilePath);
     const { size } = fs.statSync(apkFilePath);
     const uploadRes = await axios.post(
       `${uploadUrl}/${packageName}/edits/${editId}/apks?uploadType=media&access_token=${token}`,
