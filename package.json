@@ -1,6 +1,6 @@
 {
   "name": "google-playstore-publisher",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Publish your app to google playstore using publisher api https://developers.google.com/android-publisher/#publishing",
   "main": "index.js",
   "scripts": {
