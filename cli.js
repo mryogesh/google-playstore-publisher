@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+const aab = 'aab'
+const apk = 'apk'
+const fileTypes = [aab, apk]
 
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
@@ -13,16 +16,22 @@ const argv = require('yargs')
     describe: 'Service account file path',
     demand: true
   })
-  .option('a', {
-    alias: 'apk',
+  .option('p', {
+    alias: 'filePath',
     type: 'string',
-    describe: 'Release apk file path',
+    describe: 'Release apk/aab file path',
     demand: true
   })
-  .option('p', {
-    alias: 'packageName',
+  .option('n', {
+    alias: 'name',
     type: 'string',
-    describe: 'Enter package name',
+    describe: 'Enter file name',
+    demand: true
+  })
+  .option('f', {
+    alias: 'fileType',
+    choices: fileTypes,
+    describe: 'Choose file type',
     demand: true
   })
   .help('h').argv;
@@ -30,13 +39,22 @@ const argv = require('yargs')
 const options = {
   track: argv.track,
   keyFilePath: argv.key,
-  apkFilePath: argv.apk,
-  packageName: argv.packageName
+  filePath: argv.filePath,
+  packageName: argv.packageName,
 };
+
+const fileType = argv.fileType
 
 const playstore = require('./index');
 
-playstore.publish(options).catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+if (fileType === aab) {
+  playstore.publishAAB(options).catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+} else if (fileType == apk) {
+  playstore.publishAPK(options).catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+}
