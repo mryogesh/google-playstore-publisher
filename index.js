@@ -77,7 +77,7 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
       published: true
     };
   } catch (e) {
-    throw e.response.data.error;
+    throw e
   }
 };
 
