@@ -5,7 +5,7 @@ const fs = require('fs');
 const util = require('util');
 const readFilePromise = util.promisify(fs.readFile);
 
-const getAuth = ({ keyFilePath }) =>
+const getAuth = keyFilePath =>
   google.auth.getClient({
     keyFile: keyFilePath,
     scopes: ['https://www.googleapis.com/auth/androidpublisher']
@@ -13,6 +13,7 @@ const getAuth = ({ keyFilePath }) =>
 
 upload = async ({ packageName, editId, file, fileType, size, token }) => {
   const uploadUrl = 'https://www.googleapis.com/upload/androidpublisher/v3/applications';
+  console.log(`about to upload`)
 
   return await axios.post(
     `${uploadUrl}/${packageName}/edits/${editId}/${fileType}?uploadType=media&access_token=${token}`,
@@ -34,8 +35,12 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
 
 publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
   try {
-    const auth = await getAuth({ keyFilePath });
+    console.log(`keyFilePath: ${keyFilePath}`)
+    const auth = await getAuth(keyFilePath);
+    console.log(`auth: ${JSON.stringify(auth)}`)
+
     const { token } = await auth.getAccessToken();
+    console.log(`token: ${JSON.stringify(token.length)}`)
 
     const baseUrl =
       'https://www.googleapis.com/androidpublisher/v3/applications';
