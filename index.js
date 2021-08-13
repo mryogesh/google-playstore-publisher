@@ -5,6 +5,9 @@ const fs = require('fs');
 const util = require('util');
 const readFilePromise = util.promisify(fs.readFile);
 
+const APK  = "apks"
+const AAB = "bundles"
+
 const getAuth = keyFilePath =>
   google.auth.getClient({
     keyFile: keyFilePath,
@@ -13,6 +16,13 @@ const getAuth = keyFilePath =>
 
 upload = async ({ packageName, editId, file, fileType, size, token }) => {
   const uploadUrl = 'https://www.googleapis.com/upload/androidpublisher/v3/applications';
+  let contentType;
+
+  if (fileType == APK) {
+    contentType = 'application/vnd.android.package-archive'
+  } else if (fileType == AAB) {
+    contentType = 'application/octet-stream'
+  }
 
   return await axios.post(
     `${uploadUrl}/${packageName}/edits/${editId}/${fileType}?uploadType=media&access_token=${token}`,
@@ -22,7 +32,7 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
         Connection: 'keep-alive',
         'accept-encoding': 'gzip, deflate',
         Accept: '*/*',
-        'Content-Type': 'application/vnd.android.package-archive',
+        'Content-Type': contentType,
         Authorization: token
       },
       maxContentLength: size * 1000,
@@ -83,9 +93,9 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
 };
 
 exports.publishAPK = async ({ keyFilePath, packageName, track, filePath }) => {
-  return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: "apks" })
+  return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: APK })
 }
 
 exports.publishAAB = async ({ keyFilePath, packageName, track, filePath }) => {
-  return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: "bundles" })
+  return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: AAB })
 }
