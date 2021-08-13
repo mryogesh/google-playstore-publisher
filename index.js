@@ -34,10 +34,7 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
 
 publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
   try {
-    console.log('get auth call')
-    console.log(`keyFilePath: ${keyFilePath}`)
     const auth = await getAuth({ keyFilePath });
-    console.log('gettoken')
     const { token } = await auth.getAccessToken();
 
     const baseUrl =
@@ -80,15 +77,14 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
       published: true
     };
   } catch (e) {
-    console.log(`catchblock trace: ${e.stack}`)
     throw e
   }
 };
 
 exports.publishAPK = async ({ keyFilePath, packageName, track, filePath }) => {
-  return await publish(keyFilePath, packageName, track, filePath, "apks")
+  return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: "apks" })
 }
 
 exports.publishAAB = async ({ keyFilePath, packageName, track, filePath }) => {
-  return await publish(keyFilePath, packageName, track, filePath, "bundles")
+  return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: "bundles" })
 }
