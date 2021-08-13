@@ -34,7 +34,10 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
 
 publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
   try {
+    console.log('get auth call')
+    console.log(`keyFilePath: ${keyFilePath}`)
     const auth = await getAuth({ keyFilePath });
+    console.log('gettoken')
     const { token } = await auth.getAccessToken();
 
     const baseUrl =
@@ -77,6 +80,7 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
       published: true
     };
   } catch (e) {
+    console.log(`catchblock trace: ${e.stack}`)
     throw e
   }
 };
