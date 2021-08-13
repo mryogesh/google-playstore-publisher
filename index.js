@@ -13,7 +13,6 @@ const getAuth = keyFilePath =>
 
 upload = async ({ packageName, editId, file, fileType, size, token }) => {
   const uploadUrl = 'https://www.googleapis.com/upload/androidpublisher/v3/applications';
-  console.log(`about to upload`)
 
   return await axios.post(
     `${uploadUrl}/${packageName}/edits/${editId}/${fileType}?uploadType=media&access_token=${token}`,
@@ -35,12 +34,9 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
 
 publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
   try {
-    console.log(`keyFilePath: ${keyFilePath}`)
     const auth = await getAuth(keyFilePath);
-    console.log(`auth: ${JSON.stringify(auth)}`)
 
     const { token } = await auth.getAccessToken();
-    console.log(`token: ${JSON.stringify(token.length)}`)
 
     const baseUrl =
       'https://www.googleapis.com/androidpublisher/v3/applications';
@@ -55,7 +51,7 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
     const file = await readFilePromise(filePath);
     const { size } = fs.statSync(filePath);
 
-    const uploadRes = await upload(packageName, editId, file, fileType, size, token)
+    const uploadRes = await upload({packageName, editId, file, fileType, size, token})
     const { versionCode } = uploadRes.data;
 
     // set track
