@@ -5,8 +5,10 @@ const fs = require('fs');
 const util = require('util');
 const readFilePromise = util.promisify(fs.readFile);
 
-const APK  = "apks"
+const APK = "apks"
 const AAB = "bundles"
+
+const baseUploadURL = 'https://www.googleapis.com/upload/androidpublisher/v3/applications';
 
 const getAuth = keyFilePath =>
   google.auth.getClient({
@@ -15,7 +17,6 @@ const getAuth = keyFilePath =>
   });
 
 upload = async ({ packageName, editId, file, fileType, size, token }) => {
-  const uploadUrl = 'https://www.googleapis.com/upload/androidpublisher/v3/applications';
   let contentType;
 
   if (fileType == APK) {
@@ -25,7 +26,7 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
   }
 
   return await axios.post(
-    `${uploadUrl}/${packageName}/edits/${editId}/${fileType}?uploadType=media&access_token=${token}`,
+    `${baseUploadURL}/${packageName}/edits/${editId}/${fileType}?uploadType=media&access_token=${token}`,
     file,
     {
       headers: {
@@ -39,7 +40,6 @@ upload = async ({ packageName, editId, file, fileType, size, token }) => {
       maxBodyLength: size * 1000
     }
   );
-
 }
 
 publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
@@ -61,7 +61,7 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
     const file = await readFilePromise(filePath);
     const { size } = fs.statSync(filePath);
 
-    const uploadRes = await upload({packageName, editId, file, fileType, size, token})
+    const uploadRes = await upload({ packageName, editId, file, fileType, size, token })
     const { versionCode } = uploadRes.data;
 
     // set track
@@ -92,10 +92,37 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
   }
 };
 
+const shareAAB = async ({ keyFilePath, packageName, file }) => {
+  const auth = await getAuth(keyFilePath);
+
+  const { token } = await auth.getAccessToken();
+
+  const url = `${baseUploadURL}/internalappsharing/${packageName}/artifacts/bundle`
+
+  const file = await readFilePromise(filePath);
+  const { size } = fs.statSync(filePath);
+
+  return await axios.post(url, file, {
+    headers: {
+      Connection: 'keep-alive',
+      'accept-encoding': 'gzip, deflate',
+      Accept: '*/*',
+      'Content-Type': 'application/octet-stream',
+      Authorization: token
+    },
+    maxContentLength: size * 1000,
+    maxBodyLength: size * 1000
+  });
+}
+
 exports.publishAPK = async ({ keyFilePath, packageName, track, filePath }) => {
   return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: APK })
 }
 
 exports.publishAAB = async ({ keyFilePath, packageName, track, filePath }) => {
   return await publish({ keyFilePath: keyFilePath, packageName: packageName, track: track, filePath: filePath, fileType: AAB })
+}
+
+exports.shareAAB = async ({ keyFilePath, packageName, filePath }) => {
+  return await shareAAB({ keyFilePath, packageName, filePath })
 }
