@@ -93,26 +93,35 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
 };
 
 const shareAAB = async ({ keyFilePath, packageName, file }) => {
-  const auth = await getAuth(keyFilePath);
+  try {
+    const auth = await getAuth(keyFilePath);
 
-  const { token } = await auth.getAccessToken();
+    const { token } = await auth.getAccessToken();
 
-  const url = `${baseUploadURL}/internalappsharing/${packageName}/artifacts/bundle`
+    const url = `${baseUploadURL}/internalappsharing/${packageName}/artifacts/bundle`
 
-  const file = await readFilePromise(filePath);
-  const { size } = fs.statSync(filePath);
+    const file = await readFilePromise(filePath);
+    const { size } = fs.statSync(filePath);
 
-  return await axios.post(url, file, {
-    headers: {
-      Connection: 'keep-alive',
-      'accept-encoding': 'gzip, deflate',
-      Accept: '*/*',
-      'Content-Type': 'application/octet-stream',
-      Authorization: token
-    },
-    maxContentLength: size * 1000,
-    maxBodyLength: size * 1000
-  });
+    const res = await axios.post(url, file, {
+      headers: {
+        Connection: 'keep-alive',
+        'accept-encoding': 'gzip, deflate',
+        Accept: '*/*',
+        'Content-Type': 'application/octet-stream',
+        Authorization: token
+      },
+      maxContentLength: size * 1000,
+      maxBodyLength: size * 1000
+    });
+    if (res.data.downloadUrl) {
+      console.log(`Internal App Sharing Download URL: ${res.data.downloadUrl}`)
+    } else {
+      console.log("Error retrieving Internal App Share URL")
+    }
+  } catch (e) {
+    console.log("Error uploading to internal app share - :", e);
+  }
 }
 
 exports.publishAPK = async ({ keyFilePath, packageName, track, filePath }) => {
