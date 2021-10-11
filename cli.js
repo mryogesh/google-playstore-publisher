@@ -3,6 +3,10 @@ const aab = 'aab'
 const apk = 'apk'
 const fileTypes = [aab, apk]
 
+const standard = "standard"
+const appShare = "appShare"
+const uploadTypes = [standard, appShare]
+
 const argv = require('yargs')
   .usage('Usage: $0 [options]')
   .option('t', {
@@ -34,6 +38,12 @@ const argv = require('yargs')
     describe: 'Choose file type',
     demand: true
   })
+  .option('u', {
+    alias: 'uploadType',
+    choices: uploadTypes,
+    describe: 'Choose upload type',
+    default: standard
+  })
   .help('h').argv;
 
 const options = {
@@ -43,9 +53,25 @@ const options = {
   packageName: argv.packageName,
 };
 
+const shareOptions = {
+  keyFilePath: argv.key,
+  filePath: argv.filePath,
+  packageName: argv.packageName,
+}
+
 const fileType = argv.fileType
 
+const uploadType = argv.uploadType
+
 const playstore = require('./index');
+
+if (uploadType == appShare) {
+  playstore.shareAAB(shareOptions).catch(err => {
+    console.error(err)
+  }).then(() => {
+    process.exit(1);
+  })
+}
 
 if (fileType === aab) {
   playstore.publishAAB(options).catch(err => {
