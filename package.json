@@ -1,6 +1,6 @@
 {
   "name": "google-playstore-publisher",
-  "version": "1.0.7",
+  "version": "2.0.0",
   "description": "Publish your app to google playstore using publisher api https://developers.google.com/android-publisher/#publishing",
   "main": "index.js",
   "scripts": {
@@ -24,8 +24,8 @@
   "author": "Yogesh Lakhotia",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
-    "googleapis": "^39.2.0",
+    "axios": "^0.21.1",
+    "googleapis": "^84.0.0",
     "yargs": "^13.2.2"
   },
   "devDependencies": {
