@@ -92,7 +92,7 @@ publish = async ({ keyFilePath, packageName, track, filePath, fileType }) => {
   }
 };
 
-const shareAAB = async ({ keyFilePath, packageName, file }) => {
+const shareAAB = async ({ keyFilePath, packageName, filePath }) => {
   try {
     const auth = await getAuth(keyFilePath);
 
