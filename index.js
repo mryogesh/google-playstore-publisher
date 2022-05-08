@@ -19,9 +19,9 @@ const getAuth = keyFilePath =>
 upload = async ({ packageName, editId, file, fileType, size, token }) => {
   let contentType;
 
-  if (fileType == APK) {
+  if (fileType === APK) {
     contentType = 'application/vnd.android.package-archive'
-  } else if (fileType == AAB) {
+  } else if (fileType === AAB) {
     contentType = 'application/octet-stream'
   }
 
