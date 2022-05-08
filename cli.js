@@ -18,31 +18,36 @@ const argv = require('yargs')
     alias: 'key',
     type: 'string',
     describe: 'Service account file path',
-    demand: true
+    demand: false
   })
   .option('p', {
-    alias: 'filePath',
+    alias: 'packageName',
     type: 'string',
     describe: 'Release apk/aab file path',
-    demand: true
+    demand: false
   })
   .option('n', {
     alias: 'name',
     type: 'string',
     describe: 'Enter file name',
-    demand: true
+    demand: false
   })
   .option('f', {
     alias: 'fileType',
     choices: fileTypes,
     describe: 'Choose file type',
-    demand: true
+    demand: false
   })
   .option('u', {
     alias: 'uploadType',
     choices: uploadTypes,
     describe: 'Choose upload type',
     default: standard
+  })
+  .option('a', {
+    alias: 'filePath',
+    describe: 'File path',
+    demand: true
   })
   .help('h').argv;
 
@@ -65,20 +70,20 @@ const uploadType = argv.uploadType
 
 const playstore = require('./index');
 
-if (uploadType == appShare) {
-  playstore.shareAAB(shareOptions).catch(err => {
-    console.error(err)
-  }).then(() => {
-    process.exit(1);
-  })
-}
+// if (uploadType == appShare) {
+//   playstore.shareAAB(shareOptions).catch(err => {
+//     console.error(err)
+//   }).then(() => {
+//     process.exit(1);
+//   })
+// }
 
 if (fileType === aab) {
   playstore.publishAAB(options).catch(err => {
     console.error(err);
     process.exit(1);
   });
-} else if (fileType == apk) {
+} else if (fileType === apk) {
   playstore.publishAPK(options).catch(err => {
     console.error(err);
     process.exit(1);
